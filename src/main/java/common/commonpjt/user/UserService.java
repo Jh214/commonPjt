@@ -27,11 +27,11 @@ public class UserService {
 
     public String login(LoginRequest request, HttpSession session, BindingResult bindingResult) {
         String userId = request.getUserId();
-        String password = request.getPassword();
+        String password = request.getUserPassword();
 
         // 존재하는 사용자인지 확인
         Optional<User> findUser = userRepository.findByUserId(userId);
-        if (findUser.isPresent() && bCryptPasswordEncoder.matches(password, findUser.get().getPassword())) {
+        if (findUser.isPresent() && bCryptPasswordEncoder.matches(password, findUser.get().getUserPassword())) {
             // 로그인 성공
             String userName = findUser.get().getUserName();
             Long userNo = findUser.get().getUserNo();
@@ -50,8 +50,8 @@ public class UserService {
             bindingResult.addError(new FieldError("joinRequest", "userId", request.getUserId(), false, null, null, "중복된 아이디입니다."));
             return "join"; // 오류가 있을 경우, 회원가입 페이지로 다시 리턴
         } else {
-            String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
-            request.setPassword(encodedPassword);
+            String encodedPassword = bCryptPasswordEncoder.encode(request.getUserPassword());
+            request.setUserPassword(encodedPassword);
             userRepository.save(request.toEntity());
             return "redirect:/user/login";
         }

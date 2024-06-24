@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class JoinRequest {
     private String userId;
-    private String password;
+    private String userPassword;
     private String userName;
     private String userEmail;
     private String userPhone;
@@ -17,7 +17,7 @@ public class JoinRequest {
     public User toEntity() {
         return User.builder()
                 .userId(userId)
-                .password(password)
+                .userPassword(userPassword)
                 .userName(userName)
                 .userEmail(userEmail)
                 .userPhone(userPhone)

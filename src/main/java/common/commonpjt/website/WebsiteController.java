@@ -16,7 +16,7 @@ public class WebsiteController {
 
     @GetMapping("/")
     public String index(){
-        return "test";
+        return "index";
     }
 
     @GetMapping("/search")

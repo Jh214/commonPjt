@@ -1,17 +1,11 @@
 package common.commonpjt.search;
 
 import common.commonpjt.search.entity.Search;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,130 +15,215 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class SearchService {
 
-    private final SearchRepository searchRepository;
     private final RestTemplate restTemplate;
-    private final String apiKey;
-    private final String searchEngineId;
-    private final String naverClientId;
-    private final String naverClientSecret;
-    private final String kakaoApiKey;
-    private static final int RESULTS_PER_PAGE = 10;
-    private static final int MAX_RESULTS = 100;
 
-    public SearchService(SearchRepository searchRepository,
-                         RestTemplate restTemplate,
-                         @Value("${google.api.key}") String apiKey,
-                         @Value("${google.search.engine.id}") String searchEngineId,
-                         @Value("${naver.client.id}") String naverClientId,
-                         @Value("${naver.client.secret}") String naverClientSecret,
-                         @Value("${kakao.api.key}") String kakaoApiKey) {
-        this.searchRepository = searchRepository;
-        this.restTemplate = restTemplate;
-        this.apiKey = apiKey;
-        this.searchEngineId = searchEngineId;
-        this.naverClientId = naverClientId;  // @Value로 주입받은 값 할당
-        this.naverClientSecret = naverClientSecret;  // @Value로 주입받은 값 할당
-        this.kakaoApiKey = kakaoApiKey;
-    }
+    @Value("${google.api.key}")
+    private String googleApiKey;
+    @Value("${google.search.engine.id}")
+    private String googleSearchEngineId;
+    @Value("${naver.client.id}")
+    private String naverClientId;
+    @Value("${naver.client.secret}")
+    private String naverClientSecret;
+    @Value("${kakao.api.key}")
+    private String kakaoApiKey;
+
+    private static final int RESULTS_PER_PAGE = 10;
 
     public List<Search> search(String query, String engine, int page) {
-        List<Search> searchResults = new ArrayList<>();
-
         switch (engine.toLowerCase()) {
             case "google":
-                searchResults = fetchGoogleResults(query, page);
-                break;
+                return fetchGoogleResults(query, page);
             case "naver":
-                searchResults = fetchNaverResults(query, page);
-                break;
+                return fetchNaverResults(query, page);
             case "kakao":
-                searchResults = fetchKakaoResults(query, page);
-                break;
+                return fetchKakaoResults(query, page);
             default:
                 throw new IllegalArgumentException("Unknown search engine: " + engine);
         }
+    }
 
-        saveSearchResults(searchResults);
-        return searchResults;
+    public int getTotalPages(String query, String engine) {
+        int totalResults = fetchTotalResults(query, engine);
+        return (int) Math.ceil((double) totalResults / RESULTS_PER_PAGE);
+    }
+
+    private int fetchTotalResults(String query, String engine) {
+        switch (engine.toLowerCase()) {
+            case "google":
+                return fetchGoogleTotalResults(query);
+            case "naver":
+                return fetchNaverTotalResults(query);
+            case "kakao":
+                return fetchKakaoTotalResults(query);
+            default:
+                throw new IllegalArgumentException("Unknown search engine: " + engine);
+        }
     }
 
     private List<Search> fetchGoogleResults(String query, int page) {
-        List<Search> searchResults = new ArrayList<>();
         int startIndex = (page - 1) * RESULTS_PER_PAGE + 1;
+        String url = String.format("https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s&start=%d",
+                googleApiKey, googleSearchEngineId, query, startIndex);
 
-        String url = String.format("https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s&start=%d", apiKey, searchEngineId, query, startIndex);
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-        List<Map<String, String>> items = (List<Map<String, String>>) response.get("items");
-
-        if (items != null) {
-            searchResults = items.stream()
-                    .map(item -> new Search.Builder(item.get("title"), item.get("link"))
-                            .snippet(item.get("snippet"))
-                            .build())
-                    .collect(Collectors.toList());
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.getForEntity(url, Map.class);
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> response = responseEntity.getBody();
+                if (response != null && response.containsKey("items")) {
+                    List<Map<String, String>> items = (List<Map<String, String>>) response.get("items");
+                    if (items != null) {
+                        return items.stream()
+                                .map(item -> new Search(item.get("title"), item.get("link"), item.get("snippet")))
+                                .collect(Collectors.toList());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리 필요
         }
 
-        return searchResults;
+        return new ArrayList<>();
+    }
+
+    private int fetchGoogleTotalResults(String query) {
+        String url = String.format("https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s&num=1",
+                googleApiKey, googleSearchEngineId, query);
+
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.getForEntity(url, Map.class);
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> response = responseEntity.getBody();
+                if (response != null && response.containsKey("searchInformation") && response.get("searchInformation") instanceof Map) {
+                    Map<String, Object> searchInfo = (Map<String, Object>) response.get("searchInformation");
+                    Object totalResultsObj = searchInfo.get("totalResults");
+                    if (totalResultsObj != null) {
+                        return Integer.parseInt(totalResultsObj.toString());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리 필요
+        }
+
+        return 0;
     }
 
     private List<Search> fetchNaverResults(String query, int page) {
         int start = (page - 1) * RESULTS_PER_PAGE + 1;
-        String url = String.format("https://openapi.naver.com/v1/search/webkr.json?query=%s&display=%d&start=%d", query, RESULTS_PER_PAGE, start);
+        String url = String.format("https://openapi.naver.com/v1/search/webkr.json?query=%s&display=%d&start=%d",
+                query, RESULTS_PER_PAGE, start);
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", naverClientId);
         headers.set("X-Naver-Client-Secret", naverClientSecret);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-        List<Map<String, String>> items = (List<Map<String, String>>) response.getBody().get("items");
-
-        if (items == null) {
-            return new ArrayList<>();
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> response = responseEntity.getBody();
+                if (response != null && response.containsKey("items")) {
+                    List<Map<String, String>> items = (List<Map<String, String>>) response.get("items");
+                    if (items != null) {
+                        return items.stream()
+                                .map(item -> new Search(item.get("title"), item.get("link"), item.get("description")))
+                                .collect(Collectors.toList());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리 필요
         }
 
-        return items.stream()
-                .map(item -> new Search.Builder(item.get("title"), item.get("link"))
-                        .snippet(item.get("description"))
-                        .build())
-                .collect(Collectors.toList());
+        return new ArrayList<>();
+    }
+
+    private int fetchNaverTotalResults(String query) {
+        String url = String.format("https://openapi.naver.com/v1/search/webkr.json?query=%s&display=1&start=1",
+                query);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Naver-Client-Id", naverClientId);
+        headers.set("X-Naver-Client-Secret", naverClientSecret);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> response = responseEntity.getBody();
+                if (response != null && response.containsKey("total")) {
+                    return (int) response.get("total");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리 필요
+        }
+
+        return 0;
     }
 
     private List<Search> fetchKakaoResults(String query, int page) {
-        String url = String.format("https://dapi.kakao.com/v2/search/web?query=%s&size=%d&page=%d", query, RESULTS_PER_PAGE, page);
+        if (page < 1) {
+            throw new IllegalArgumentException("Page number cannot be less than 1");
+        }
+
+        int start = Math.max((page - 1) * RESULTS_PER_PAGE, 1);
+        String url = String.format("https://dapi.kakao.com/v2/search/web?query=%s&size=%d&page=%d",
+                query, RESULTS_PER_PAGE, start);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "KakaoAK " + kakaoApiKey);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-            List<Map<String, Object>> items = (List<Map<String, Object>>) response.getBody().get("documents");
+            if (response.getStatusCode() == HttpStatus.OK) {
+                List<Map<String, String>> items = (List<Map<String, String>>) response.getBody().get("documents");
 
-            if (items == null) {
-                return new ArrayList<>();
+                if (items != null) {
+                    return items.stream()
+                            .map(item -> new Search(item.get("title"), item.get("url"), item.get("contents")))
+                            .collect(Collectors.toList());
+                }
+            } else if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                String responseBody = response.getBody().toString();
+                throw new RuntimeException("Kakao API 호출 중 오류 발생: " + responseBody);
             }
-
-            return items.stream()
-                    .map(item -> new Search.Builder((String) item.get("title"), (String) item.get("url"))
-                            .snippet((String) item.get("contents"))
-                            .build())
-                    .collect(Collectors.toList());
         } catch (RestClientException e) {
-            // 로그를 남기고 빈 리스트 반환
-            e.printStackTrace();
-            return new ArrayList<>();
+            e.printStackTrace(); // RestTemplate에서 발생하는 예외 처리
+            throw new RuntimeException("Kakao API 호출 중 오류 발생", e);
         }
-    }
-    public int getTotalPages(String query, String engine) {
-        // 실제 검색 결과의 총 개수와 RESULTS_PER_PAGE 값을 이용하여 전체 페이지 수를 계산합니다.
-        // 이는 임의의 값을 반환하도록 설정되어 있으므로, 실제 검색 API의 응답에 맞게 수정해야 합니다.
-        int totalResults = 1000;  // 예시 값
-        return (int) Math.ceil((double) totalResults / RESULTS_PER_PAGE);
+
+        return new ArrayList<>();
     }
 
-    private void saveSearchResults(List<Search> searchResults) {
-        searchRepository.saveAll(searchResults);
+    private int fetchKakaoTotalResults(String query) {
+        String url = String.format("https://dapi.kakao.com/v2/search/web?query=%s&size=1&page=1", query);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> meta = (Map<String, Object>) response.getBody().get("meta");
+                if (meta != null) {
+                    Object totalCountObj = meta.get("total_count");
+                    if (totalCountObj != null) {
+                        return Integer.parseInt(totalCountObj.toString());
+                    }
+                }
+            } else if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                String responseBody = response.getBody().toString();
+                throw new RuntimeException("Kakao API 호출 중 오류 발생: " + responseBody);
+            }
+        } catch (RestClientException e) {
+            e.printStackTrace(); // RestTemplate에서 발생하는 예외 처리
+            throw new RuntimeException("Kakao API 호출 중 오류 발생", e);
+        }
+
+        return 0;
     }
+
 }

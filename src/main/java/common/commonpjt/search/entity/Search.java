@@ -46,4 +46,11 @@ public class Search {
             return new Search(this);
         }
     }
+
+    public Search(String title, String link, String snippet) {
+        this.title = title;
+        this.link = link;
+        this.snippet = snippet;
+    }
+
 }

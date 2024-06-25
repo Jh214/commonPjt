@@ -113,15 +113,25 @@
 
                     <h6 class="text-center">최고의 웹사이트를 쉽게 찾을 수 있도록 도와드립니다.</h6>
 
-                    <form method="get" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
+                    <!--                    <form method="get" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">-->
+                    <!--                        <div class="input-group input-group-lg">-->
+                    <!--                                    <span class="input-group-text bi-search" id="basic-addon1">-->
+                    <!--                                        -->
+                    <!--                                    </span>-->
+
+                    <!--                            <input name="keyword" type="search" class="form-control" id="keyword"-->
+                    <!--                                   placeholder="Design, Code, Marketing, Finance ..." aria-label="Search">-->
+
+                    <!--                            <button type="submit" class="form-control">Search</button>-->
+                    <!--                        </div>-->
+                    <!--                    </form>-->
+                    <form method="get" action="/search/{query}" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
                         <div class="input-group input-group-lg">
-                                    <span class="input-group-text bi-search" id="basic-addon1">
-                                        
-                                    </span>
-
-                            <input name="keyword" type="search" class="form-control" id="keyword"
-                                   placeholder="Design, Code, Marketing, Finance ..." aria-label="Search">
-
+                            <span class="input-group-text bi-search" id="basic-addon1">
+                             <!-- Optional: Add search icon content here -->
+                            </span>
+                            <input name="query" type="search" class="form-control" id="keyword" placeholder="Design, Code, Marketing, Finance ..." aria-label="Search">
+                            <input type="hidden" name="cx" value="164bb0c48976e4f24">
                             <button type="submit" class="form-control">Search</button>
                         </div>
                     </form>

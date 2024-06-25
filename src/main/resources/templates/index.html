@@ -99,6 +99,9 @@
                 <div class="d-none d-lg-block">
                     <a th:href="@{/user/login}" class="navbar-icon bi-person smoothscroll"></a>
                 </div>
+                <div class="mypage">
+                    <a th:href="@{/user/mypage}">mypage</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -125,14 +128,16 @@
                     <!--                            <button type="submit" class="form-control">Search</button>-->
                     <!--                        </div>-->
                     <!--                    </form>-->
-                    <form method="get" action="/search/{query}" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
+                    <form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bi-search" id="basic-addon1">
                              <!-- Optional: Add search icon content here -->
                             </span>
                             <input name="query" type="search" class="form-control" id="keyword" placeholder="Design, Code, Marketing, Finance ..." aria-label="Search">
-                            <input type="hidden" name="cx" value="164bb0c48976e4f24">
-                            <button type="submit" class="form-control">Search</button>
+                            <input type="hidden" name="cx" value="33dca75676878466d">
+                            <button type="submit" name="engine" value="google" class="form-control">Google Search</button>&nbsp;&nbsp;&nbsp;
+                            <button type="submit" name="engine" value="naver" class="form-control">Naver Search</button>&nbsp;&nbsp;&nbsp;
+                            <button type="submit" name="engine" value="kakao" class="form-control">Kakao Search</button>&nbsp;&nbsp;&nbsp;
                         </div>
                     </form>
                 </div>

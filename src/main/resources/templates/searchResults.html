@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <style>
+        .result {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .result a {
+            font-size: 18px;
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        }
+        .result p {
+            font-size: 14px;
+            color: #4d5156;
+        }
+    </style>
+</head>
+<body>
+
+<div id="results" class="mt-4">
+    <ul>
+        <th:block th:each="result : ${results}">
+            <li class="result">
+                <a th:href="${result.link}" th:text="${result.title}"></a>
+                <p th:text="${result.snippet}"></p>
+            </li>
+        </th:block>
+    </ul>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Search Results</title>
+    <style>
+        /* 전체 body 스타일 */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f2f2f2; /* 배경색 */
+            font-family: Arial, sans-serif; /* 폰트 설정 */
+            padding: 20px; /* 전체 패딩 */
+            margin: 0; /* 바디 마진 제거 */
+        }
+
+        /* 검색 폼 스타일 */
+        .custom-form {
+            width: 100%; /* 전체 너비 */
+            max-width: 800px; /* 최대 너비 */
+            background-color: #ffffff; /* 검색창 배경색 */
+            border: 1px solid #e0e0e0; /* 테두리 */
+            border-radius: 5px; /* 모서리 둥글기 */
+            box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.1); /* 그림자 */
+            padding: 15px;
+            display: flex;
+            align-items: center; /* 아이콘과 텍스트를 수직 정렬 */
+            margin-bottom: 20px; /* 아래 여백 */
+        }
+
+        /* 검색 아이콘 스타일 */
+        .bi-search {
+            font-size: 1.5rem;
+            color: #808080; /* 아이콘 색상 */
+            margin-right: 10px; /* 아이콘 오른쪽 여백 */
+        }
+
+        /* 검색 입력창 스타일 */
+        #keyword {
+            flex: 1; /* 자동으로 나머지 공간 채우기 */
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+        /* 검색 버튼 스타일 */
+        .custom-form button {
+            border: none;
+            outline: none;
+            background-color: #1a73e8; /* 구글 블루 컬러 */
+            color: #ffffff;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-form button:hover {
+            background-color: #0d47a1; /* 마우스 오버 시 배경색 변화 */
+        }
+
+        /* 검색 결과 박스 스타일 */
+        #results {
+            width: 100%; /* 전체 너비 */
+            max-width: 800px; /* 최대 너비 */
+        }
+
+        .result {
+            border: 1px solid #e0e0e0; /* 연한 회색 테두리 */
+            border-radius: 5px; /* 모서리 둥글기 */
+            margin-bottom: 20px; /* 아래 여백 */
+            padding: 15px; /* 안쪽 여백 */
+            background-color: #ffffff; /* 검색 결과 배경색 */
+        }
+
+        .result a {
+            font-size: 18px;
+            color: #1a0dab; /* 구글 블루 컬러 */
+            text-decoration: none;
+        }
+
+        .result a:hover {
+            text-decoration: underline;
+        }
+
+        .result p {
+            font-size: 14px;
+            color: #4d5156; /* 텍스트 컬러 */
+            margin-top: 10px; /* 위 여백 */
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* 위 여백 */
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #f2f2f2;
+        }
+
+        .pagination .active {
+            background-color: #1a73e8;
+            color: #ffffff;
+            border-color: #1a73e8;
+        }
+
+        .pagination .page-control {
+            margin-left: 10px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 검색 폼 -->
+<form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
+    <span class="input-group-text bi-search" id="basic-addon1"></span>
+    <input name="query" type="search" class="form-control" id="keyword" placeholder="Search Google" aria-label="Search">
+    <input type="hidden" name="engine" value="google">
+    <button type="submit" class="form-control">Google Search</button>
+</form>
+
+<!-- 검색 결과 -->
+<div id="results">
+    <ul>
+        <th:block th:each="result : ${results}">
+            <li class="result">
+                <a th:href="${result.link}" th:text="${result.title}"></a>
+                <p th:text="${result.snippet}"></p>
+            </li>
+        </th:block>
+    </ul>
+</div>
+
+<!-- 페이지네이션 -->
+<div class="pagination">
+    <th:block th:if="${totalPages > 1}">
+        <a th:href="@{/searchResults(query=${query}, engine=${engine}, page=1)}">&lt;&lt;</a>
+        <th:block th:each="i : ${#numbers.sequence(currentPage - 2, currentPage + 2)}">
+            <a th:if="${i >= 1 && i <= totalPages}"
+               th:href="@{/searchResults(query=${query}, engine=${engine}, page=${i})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </th:block>
+        <a th:href="@{/searchResults(query=${query}, engine=${engine}, page=${totalPages})}">&gt;&gt;</a>
+    </th:block>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kakao Search Results</title>
+    <style>
+        /* 카카오 스타일 적용 */
+        .result {
+            border-bottom: 1px solid #f2f2f2;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .result a {
+            font-size: 18px;
+            color: #ff8e00;
+            text-decoration: none;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        }
+        .result p {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
+    <div class="input-group input-group-lg">
+        <span class="input-group-text bi-search" id="basic-addon1"></span>
+        <input name="query" type="search" class="form-control" id="keyword" placeholder="Search Kakao" aria-label="Search">
+        <input type="hidden" name="engine" value="kakao">
+        <button type="submit" class="form-control">Kakao Search</button>
+    </div>
+</form>
+
+<div id="results" class="mt-4">
+    <ul>
+        <th:block th:each="result : ${results}">
+            <li class="result">
+                <a th:href="${result.link}" th:text="${result.title}"></a>
+                <p th:text="${result.snippet}"></p>
+            </li>
+        </th:block>
+    </ul>
+</div>
+<div class="pagination">
+    <th:block th:if="${totalPages > 1}">
+        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/searchResults(query=${query}, engine=${engine}, page=${i})}" th:text="${i}"
+               th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </th:block>
+    </th:block>
+</div>
+
+
+</body>
+</html>

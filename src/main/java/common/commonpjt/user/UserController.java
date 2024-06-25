@@ -44,4 +44,10 @@ public class UserController {
         String url = userService.join(request, bindingResult);
         return url;
     }
+    @GetMapping("/mypage")
+    public String myPage(Model model) {
+        model.addAttribute("user", new User());
+        return "mypage";
+    }
+
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "search")
+@Table(name = "tb_search")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,7 +16,9 @@ public class Search {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    @Column(length = 2048)
     private String link;
+    @Column(length = 2048)
     private String snippet;
 
     private Search(Builder builder) {

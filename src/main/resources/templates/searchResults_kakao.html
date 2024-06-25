@@ -1,59 +1,176 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Kakao Search Results</title>
     <style>
-        /* 카카오 스타일 적용 */
-        .result {
-            border-bottom: 1px solid #f2f2f2;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f7f7f7;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            padding: 20px;
+            margin: 0;
         }
+
+        .kakao-form {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 5px 10px;
+        }
+
+        .kakao-form input[type="search"] {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 10px;
+            border-radius: 25px;
+
+        }
+
+        .kakao-form button {
+            border: none;
+            outline: none;
+            background-color: #ffe812;
+            color: #000000;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 25px;
+            margin-left: 10px;
+        }
+
+        .kakao-form button:hover {
+            background-color: #ffd700;
+        }
+
+        #results {
+            width: 100%;
+            max-width: 875px;
+        }
+
+        .result {
+            border-bottom: 1px solid #d9d9d9;
+            padding: 15px;
+            background-color: #ffffff;
+            list-style-type: none;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
         .result a {
             font-size: 18px;
-            color: #ff8e00;
+            color: #3c1e1e;
             text-decoration: none;
         }
+
         .result a:hover {
             text-decoration: underline;
         }
+
         .result p {
             font-size: 14px;
-            color: #666;
+            color: #666666;
+            margin-top: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #f2f2f2;
+        }
+
+        .pagination .active {
+            background-color: #ffe812;
+            color: #000000;
+            border-color: #ffe812;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333; /* 텍스트 컬러 */
+            font-size: 2rem; /* 폰트 크기 */
+            margin: 0 0 1rem 0;
+            font-family: Montserrat, sans-serif;
+            border-bottom: 0.5px solid rgba(171, 222, 230, 0.9);
+            border-top: 0.5px solid rgba(171, 222, 230, 0.9);
+        }
+
+        .navbar-brand img {
+            width: 3rem; /* 이미지 너비 */
+            height: auto; /* 이미지 높이 자동 조정 */
+            margin-right: 10px; /* 이미지 오른쪽 여백 */
         }
     </style>
 </head>
 <body>
-
-<form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
-    <div class="input-group input-group-lg">
-        <span class="input-group-text bi-search" id="basic-addon1"></span>
-        <input name="query" type="search" class="form-control" id="keyword" placeholder="Search Kakao" aria-label="Search">
-        <input type="hidden" name="engine" value="kakao">
-        <button type="submit" class="form-control">Kakao Search</button>
-    </div>
+<div class="navbar-brand_dv">
+    <a class="navbar-brand" href="/">
+        <!-- 로고 이미지 -->
+        <img src="/images/apple.png" alt="apple" class="appleicon"/>
+        <!-- 로고 텍스트 -->
+        <span>APPLE</span>
+    </a>
+</div>
+<!-- 검색 폼 -->
+<form method="get" action="/search" class="kakao-form" role="search">
+    <span class="input-group-text bi-search" id="basic-addon1"></span>
+    <input name="query" type="search" class="form-control" id="keyword" placeholder="Search Kakao" aria-label="Search">
+    <input type="hidden" name="engine" value="kakao">
+    <button type="submit" class="form-control">Kakao Search</button>
 </form>
 
-<div id="results" class="mt-4">
+<!-- 검색 결과 -->
+<div id="results">
     <ul>
         <th:block th:each="result : ${results}">
             <li class="result">
-                <a th:href="${result.link}" th:text="${result.title}"></a>
+                <a th:href="${result.link}" th:utext="${result.title}"></a>
                 <p th:text="${result.snippet}"></p>
             </li>
         </th:block>
     </ul>
 </div>
+
+<!-- 페이지네이션 -->
 <div class="pagination">
     <th:block th:if="${totalPages > 1}">
-        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/searchResults(query=${query}, engine=${engine}, page=${i})}" th:text="${i}"
+        <a th:href="@{/search(query=${query}, engine=${engine}, page=1)}">&lt;&lt;</a>
+        <th:block th:each="i : ${#numbers.sequence(currentPage - 2, currentPage + 2)}">
+            <a th:if="${i >= 1 && i <= totalPages}"
+               th:href="@{/search(query=${query}, engine=${engine}, page=${i})}"
+               th:text="${i}"
                th:classappend="${i == currentPage} ? 'active' : ''"></a>
         </th:block>
+        <a th:href="@{/search(query=${query}, engine=${engine}, page=${totalPages})}">&gt;&gt;</a>
     </th:block>
 </div>
 
-
 </body>
 </html>
+

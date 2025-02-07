@@ -1,10 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Moa Search</title>
+
+    <!-- CSS FILES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap"
+          rel="stylesheet">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="css/templatemo-topic-listing.css" rel="stylesheet">
+    <link href="css/logo.css" rel="stylesheet">
+    <!--
+
+    TemplateMo 590 topic listing
+
+    https://templatemo.com/tm-590-topic-listing
+
+    -->
 </head>
-<body>
+
+<body id="top">
+
+<main>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container justify-content-center">
+            <a class="navbar-brand" href="/">
+                <img src="/images/apple.png" alt="apple" class="appleicon"/>
+                <span class="appleLogo">Moa Search</span>
+            </a>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', (event) => {
+                    var linkElement = document.getElementById('loginLink');
+                    console.log('Initial href:', linkElement.href);
+
+                    // Check every second if the href is changed
+                    setInterval(() => {
+                        console.log('Current href:', linkElement.href);
+                    }, 1000);
+                });
+
+            </script>
+        </div>
+    </nav>
+
+
+    <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-8 col-12 mx-auto">
+                    <h1 class="text-white text-center">다양한 웹 검색 사이트를 하나로!</h1>
+
+                    <h6 class="text-center">최고의 정보를 쉽게 찾을 수 있도록 도와드립니다.</h6>
+                </div>
+                <div class="col-lg-8 col-12">
+                    <form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5 justify-content-center" role="search">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bi-search" id="basic-addon1">
+                             <!-- Optional: Add search icon content here -->
+                            </span>
+                            <input name="query" type="search" class="form-control" id="keyword" placeholder="검색어를 입력하여 주세요." aria-label="Search">
+                            <input type="hidden" name="cx" value="33dca75676878466d">
+                            <button type="submit" name="engine" value="google" class="form-control">구글 검색</button>&nbsp;&nbsp;&nbsp;
+                            <button type="submit" name="engine" value="naver" class="form-control">네이버 검색</button>&nbsp;&nbsp;&nbsp;
+                            <button type="submit" name="engine" value="kakao" class="form-control">카카오 검색</button>&nbsp;&nbsp;&nbsp;
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="featured-section">
+        <div class="container">
+            <div class="row justify-content-center">
+
+                <div class="col-lg-4 col-12 mb-4 mb-lg-0">
+                    <div class="custom-block bg-white shadow-lg">
+<!--                        <div class="d-flex mt">-->
+<!--                            <div>-->
+<!--                                <h5 class="mb-2">About Us</h5>-->
+
+<!--                                <p class="mb-0">Front End - 김준표, 김민정<br>Back End - 심재휘, 이재승</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="logo-container">
+                            <a href="https://google.com">
+                            <img src="images/GoogleLogo.png" class="googleLogo" alt="">
+                            </a>
+                            <a href="https://naver.com">
+                            <img src="images/naverLogo.png" class="naverLogo" alt="">
+                            </a>
+                            <a href="https://daum.net">
+                            <img src="images/KakaoLogo.svg" class="kakaoLogo" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer section-padding">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-3 col-12 mb-4 pb-2">
+                <a class="navbar-brand mb-2" href="/">
+                    <img src="/images/apple.png" alt="apple" class="appleicon"/>
+                    <span>APPLE</span>
+                </a>
+            </div>
+
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0">
+                <h6 class="site-footer-title mb-3">Information</h6>
+
+                <p class="text-white d-flex mb-1">
+                    <a href="https://dept.daelim.ac.kr/com/index.do" class="site-footer-link">
+                        대림대학교 컴퓨터정보학부 해커톤
+                    </a>
+                </p>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
+                <p class="copyright-text mt-lg-5 mt-4">Copyright © 2024 APPLE. All rights reserved.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+
+<!-- JAVASCRIPT FILES -->
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery.sticky.js"></script>
+<script src="js/click-scroll.js"></script>
+<script src="js/custom.js"></script>
 
 </body>
+
 </html>

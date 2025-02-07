@@ -1,0 +1,381 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Google Search Results</title>-->
+<!--    <style>-->
+<!--        /* 전체 body 스타일 */-->
+<!--        body {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            align-items: center;-->
+<!--            background-color: #f2f2f2; /* 배경색 */-->
+<!--            font-family: Arial, sans-serif; /* 폰트 설정 */-->
+<!--            padding: 20px; /* 전체 패딩 */-->
+<!--            margin: 0; /* 바디 마진 제거 */-->
+<!--        }-->
+
+<!--        /* 검색 폼 스타일 */-->
+<!--        .custom-form {-->
+<!--            width: 100%; /* 전체 너비 */-->
+<!--            max-width: 800px; /* 최대 너비 */-->
+<!--            background-color: #ffffff; /* 검색창 배경색 */-->
+<!--            border: 1px solid #e0e0e0; /* 테두리 */-->
+<!--            border-radius: 5px; /* 모서리 둥글기 */-->
+<!--            box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.1); /* 그림자 */-->
+<!--            padding: 15px;-->
+<!--            display: flex;-->
+<!--            align-items: center; /* 아이콘과 텍스트를 수직 정렬 */-->
+<!--            margin-bottom: 20px; /* 아래 여백 */-->
+<!--        }-->
+
+<!--        /* 검색 아이콘 스타일 */-->
+<!--        .bi-search {-->
+<!--            font-size: 1.5rem;-->
+<!--            color: #808080; /* 아이콘 색상 */-->
+<!--            margin-right: 10px; /* 아이콘 오른쪽 여백 */-->
+<!--        }-->
+
+<!--        /* 검색 입력창 스타일 */-->
+<!--        #keyword {-->
+<!--            flex: 1; /* 자동으로 나머지 공간 채우기 */-->
+<!--            border: none;-->
+<!--            outline: none;-->
+<!--            font-size: 1rem;-->
+<!--            padding: 10px;-->
+<!--        }-->
+
+<!--        /* 검색 버튼 스타일 */-->
+<!--        .custom-form button {-->
+<!--            border: none;-->
+<!--            outline: none;-->
+<!--            background-color: #1a73e8; /* 구글 블루 컬러 */-->
+<!--            color: #ffffff;-->
+<!--            font-size: 1rem;-->
+<!--            padding: 10px 20px;-->
+<!--            cursor: pointer;-->
+<!--            transition: background-color 0.3s ease;-->
+<!--        }-->
+
+<!--        .custom-form button:hover {-->
+<!--            background-color: #0d47a1; /* 마우스 오버 시 배경색 변화 */-->
+<!--        }-->
+
+<!--        /* 검색 결과 박스 스타일 */-->
+<!--        #results {-->
+<!--            width: 100%; /* 전체 너비 */-->
+<!--            max-width: 875px; /* 최대 너비 */-->
+<!--            position: relative;-->
+<!--            left: -18px;-->
+<!--        }-->
+
+<!--        .result {-->
+<!--            border: 1px solid #e0e0e0; /* 연한 회색 테두리 */-->
+<!--            border-radius: 5px; /* 모서리 둥글기 */-->
+<!--            margin-bottom: 20px; /* 아래 여백 */-->
+<!--            padding: 15px; /* 안쪽 여백 */-->
+<!--            background-color: #ffffff; /* 검색 결과 배경색 */-->
+<!--            list-style-type: none ;-->
+<!--        }-->
+
+<!--        .result a {-->
+<!--            font-size: 18px;-->
+<!--            color: #1a0dab; /* 구글 블루 컬러 */-->
+<!--            text-decoration: none;-->
+<!--        }-->
+
+<!--        .result a:hover {-->
+<!--            text-decoration: underline;-->
+<!--        }-->
+
+<!--        .result p {-->
+<!--            font-size: 14px;-->
+<!--            color: #4d5156; /* 텍스트 컬러 */-->
+<!--            margin-top: 10px; /* 위 여백 */-->
+<!--        }-->
+
+<!--        /* 페이지네이션 스타일 */-->
+<!--        .pagination {-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            margin-top: 20px; /* 위 여백 */-->
+<!--        }-->
+
+<!--        .pagination a {-->
+<!--            display: inline-block;-->
+<!--            padding: 5px 10px;-->
+<!--            margin-right: 5px;-->
+<!--            border: 1px solid #ccc;-->
+<!--            border-radius: 3px;-->
+<!--            text-decoration: none;-->
+<!--            color: #333;-->
+<!--            transition: background-color 0.3s ease;-->
+<!--        }-->
+
+<!--        .pagination a:hover {-->
+<!--            background-color: #f2f2f2;-->
+<!--        }-->
+
+<!--        .pagination .active {-->
+<!--            background-color: #1a73e8;-->
+<!--            color: #ffffff;-->
+<!--            border-color: #1a73e8;-->
+<!--        }-->
+
+<!--        .pagination .page-control {-->
+<!--            margin-left: 10px;-->
+<!--            font-size: 0.8rem;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--&lt;!&ndash; 검색 폼 &ndash;&gt;-->
+<!--<form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">-->
+<!--    <span class="input-group-text bi-search" id="basic-addon1"></span>-->
+<!--    <input name="query" type="search" class="form-control" id="keyword" placeholder="Search Google" aria-label="Search">-->
+<!--    <input type="hidden" name="engine" value="google">-->
+<!--    <button type="submit" class="form-control">Google Search</button>-->
+<!--</form>-->
+
+<!--&lt;!&ndash; 검색 결과 &ndash;&gt;-->
+<!--<div id="results">-->
+<!--    <ul>-->
+<!--        <th:block th:each="result : ${results}">-->
+<!--            <li class="result">-->
+<!--                <a th:href="${result.link}" th:text="${result.title}"></a>-->
+<!--                <p th:text="${result.snippet}"></p>-->
+<!--            </li>-->
+<!--        </th:block>-->
+<!--    </ul>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 페이지네이션 &ndash;&gt;-->
+<!--<div class="pagination">-->
+<!--    <th:block th:if="${totalPages > 1}">-->
+<!--        <a th:href="@{/search(query=${query}, engine=${engine}, page=1)}">&lt;&lt;</a>-->
+<!--        <th:block th:each="i : ${#numbers.sequence(currentPage - 2, currentPage + 2)}">-->
+<!--            <a th:if="${i >= 1 && i <= totalPages}"-->
+<!--               th:href="@{/search(query=${query}, engine=${engine}, page=${i})}"-->
+<!--               th:text="${i}"-->
+<!--               th:classappend="${i == currentPage} ? 'active' : ''"></a>-->
+<!--        </th:block>-->
+<!--        <a th:href="@{/search(query=${query}, engine=${engine}, page=${totalPages})}">&gt;&gt;</a>-->
+<!--    </th:block>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Search Results</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap"
+          rel="stylesheet">
+    <style>
+        /* 전체 body 스타일 */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f2f2f2; /* 배경색 */
+            font-family: Arial, sans-serif; /* 폰트 설정 */
+            padding: 20px; /* 전체 패딩 */
+            margin: 0; /* 바디 마진 제거 */
+        }
+
+        /* 검색 폼 스타일 */
+        .custom-form-container {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .custom-form {
+            background-color: #ffffff; /* 검색창 배경색 */
+            border: 1px solid #e0e0e0; /* 테두리 */
+            border-radius: 5px; /* 모서리 둥글기 */
+            box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1); /* 그림자 */
+            padding: 15px;
+            display: flex;
+            align-items: center; /* 아이콘과 텍스트를 수직 정렬 */
+            width: 100%;
+        }
+
+        /* 검색 아이콘 스타일 */
+        .bi-search {
+            font-size: 1.5rem;
+            color: #808080; /* 아이콘 색상 */
+            margin-right: 10px; /* 아이콘 오른쪽 여백 */
+        }
+
+        /* 검색 입력창 스타일 */
+        #keyword {
+            flex: 1; /* 자동으로 나머지 공간 채우기 */
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+        /* 검색 버튼 스타일 */
+        .custom-form button {
+            border: none;
+            outline: none;
+            background-color: #1a73e8; /* 구글 블루 컬러 */
+            color: #ffffff;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-form button:hover {
+            background-color: #0d47a1; /* 마우스 오버 시 배경색 변화 */
+        }
+
+        /* 검색 결과 박스 스타일 */
+        #results {
+            width: 100%; /* 전체 너비 */
+            max-width: 875px; /* 최대 너비 */
+            position: relative;
+            left: -18px;
+        }
+
+        .result {
+            border: 1px solid #e0e0e0; /* 연한 회색 테두리 */
+            border-radius: 5px; /* 모서리 둥글기 */
+            margin-bottom: 20px; /* 아래 여백 */
+            padding: 15px; /* 안쪽 여백 */
+            background-color: #ffffff; /* 검색 결과 배경색 */
+            list-style-type: none;
+        }
+
+        .result a {
+            font-size: 18px;
+            color: #1a0dab; /* 구글 블루 컬러 */
+            text-decoration: none;
+        }
+
+        .result a:hover {
+            text-decoration: underline;
+        }
+
+        .result p {
+            font-size: 14px;
+            color: #4d5156; /* 텍스트 컬러 */
+            margin-top: 10px; /* 위 여백 */
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* 위 여백 */
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #f2f2f2;
+        }
+
+        .pagination .active {
+            background-color: #1a73e8;
+            color: #ffffff;
+            border-color: #1a73e8;
+        }
+
+        .pagination .page-control {
+            margin-left: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* 로고 이미지와 텍스트 스타일 */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333; /* 텍스트 컬러 */
+            font-size: 2rem; /* 폰트 크기 */
+            margin: 0 0 1rem 0;
+            font-family: Montserrat, sans-serif;
+            border-bottom: 0.5px solid rgba(171, 222, 230, 0.9);
+            border-top: 0.5px solid rgba(171, 222, 230, 0.9);
+        }
+
+        .navbar-brand img {
+            width: 3rem; /* 이미지 너비 */
+            height: auto; /* 이미지 높이 자동 조정 */
+            margin-right: 10px; /* 이미지 오른쪽 여백 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar-brand_dv">
+    <a class="navbar-brand" href="/">
+        <!-- 로고 이미지 -->
+        <img src="/images/apple.png" alt="apple" class="appleicon"/>
+        <!-- 로고 텍스트 -->
+        <span>APPLE</span>
+    </a>
+</div>
+
+<div class="custom-form-container">
+    <!-- 검색 폼 -->
+    <form method="get" action="/search" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
+        <span class="input-group-text bi-search" id="basic-addon1"></span>
+        <input name="query" type="search" class="form-control" id="keyword" placeholder="Search Google"
+               aria-label="Search">
+        <input type="hidden" name="engine" value="google">
+        <button type="submit" class="form-control">Google Search</button>
+    </form>
+</div>
+
+<!-- 검색 결과 -->
+<div id="results">
+    <ul>
+        <th:block th:each="result : ${results}">
+            <li class="result">
+                <a th:href="${result.link}" th:text="${result.title}"></a>
+                <p th:text="${result.snippet}"></p>
+            </li>
+        </th:block>
+    </ul>
+</div>
+
+<!-- 페이지네이션 -->
+<div class="pagination">
+    <th:block th:if="${totalPages > 1}">
+        <a th:href="@{/search(query=${query}, engine=${engine}, page=1)}">&lt;&lt;</a>
+        <th:block th:each="i : ${#numbers.sequence(currentPage - 2, currentPage + 2)}">
+            <a th:if="${i >= 1 && i <= totalPages}"
+               th:href="@{/search(query=${query}, engine=${engine}, page=${i})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </th:block>
+        <a th:href="@{/search(query=${query}, engine=${engine}, page=${totalPages})}">&gt;&gt;</a>
+    </th:block>
+</div>
+
+</body>
+</html>
